@@ -1,0 +1,10 @@
+{
+    "files.associations": {
+        "proc.h": "c",
+        "sysinfo.h": "c",
+        "syscall.h": "c",
+        "defs.h": "c",
+        "types.h": "c",
+        "user.h": "c"
+    }
+}

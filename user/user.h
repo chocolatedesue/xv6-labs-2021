@@ -41,3 +41,5 @@ int atoi(const char*);
 int memcmp(const void *, const void *, uint);
 void *memcpy(void *, const void *, uint);
 int trace(int);	
+struct sysinfo; // 这里要声明一下 sysinfo 结构，供用户态使用。
+int sysinfo(struct sysinfo *);
