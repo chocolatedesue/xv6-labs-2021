@@ -135,14 +135,11 @@ found:
     return 0;
   }
 
-  p->pagetable = proc_pagetable(p);
   // Set up new context to start executing at forkret,
   // which returns to user space.
   memset(&p->context, 0, sizeof(p->context));
   p->context.ra = (uint64)forkret;
   p->context.sp = p->kstack + PGSIZE;
-  p->syscall_trace = 0;
-  p->usyscall->pid = p->pid;
 
   return p;
 }
@@ -166,9 +163,6 @@ freeproc(struct proc *p)
   p->chan = 0;
   p->killed = 0;
   p->xstate = 0;
-  if (p->usyscall) kfree((void *)p->usyscall);
-    p->usyscall = 0;
-
   p->state = UNUSED;
 }
 
@@ -202,15 +196,6 @@ proc_pagetable(struct proc *p)
     return 0;
   }
 
-   if (mappages(pagetable, USYSCALL, PGSIZE, (uint64)(p->usyscall),
-                 PTE_R | PTE_U) < 0) {
-        uvmunmap(pagetable, TRAMPOLINE, 1, 0);
-        uvmunmap(pagetable, TRAPFRAME, 1, 0);
-        uvmfree(pagetable, 0);
-        return 0;
-    }
-
-
   return pagetable;
 }
 
@@ -219,8 +204,6 @@ proc_pagetable(struct proc *p)
 void
 proc_freepagetable(pagetable_t pagetable, uint64 sz)
 {
-    uvmunmap(pagetable, USYSCALL, 1, 0);
-  uvmfree(pagetable, sz);
   uvmunmap(pagetable, TRAMPOLINE, 1, 0);
   uvmunmap(pagetable, TRAPFRAME, 1, 0);
   uvmfree(pagetable, sz);
